@@ -45,10 +45,28 @@ let hit = document.getElementById("hit-button");
 let stay = document.getElementById("stay-button");
 let winnerArea = document.getElementById("winner-area");
 
+// images Bender
+let benderWin = document.getElementById("benderW");
+let benderLose = document.getElementById('benderL');
+
+function hideBender() {
+    benderWin.style.visibility = 'hidden';
+    benderLose.style.visibility = 'hidden';
+}
+
+function showBenderWin(){
+    benderWin.style.visibility = 'visible';
+}
+
+function showBenderLose (){
+    benderLose.style.visibility = 'visible';
+}
+
 // add click event
 newGame.addEventListener("click", startNewGame);
 
 hideGameButton();
+hideBender();
 
 hit.addEventListener("click", function () {
     player.push(drawCard());
@@ -74,7 +92,8 @@ function dealInitialCards() {
 function showHand(hand, score) {
     let cards = "";
     for (let h in hand) {
-        cards += hand[h].value + hand[h].card + ' ';
+        // cards += hand[h].value + hand[h].card + ' ';
+        cards += cardSymbol(hand[h]);
     }
     return cards + " score: " + score;
 }
@@ -126,23 +145,28 @@ function isBust(score) {
 
 function determineWinner(stayed) {
     if (isBust(playerScore)) {
-        return dealerWins + "; player bust";
+        showBenderWin();
+        return dealerWins;
     }
     else if (isBust(dealerScore)) {
+        showBenderLose();
         return playerWins;
     }
     else if (dealerCards.length == 5 && dealerScore <= 21) {
-        return dealerWins + "; 5 cards under 21";
+        showBenderWin();
+        return dealerWins;
     }
     else if (stayed) {
         if (dealerScore == playerScore) {
             return draw;
         }
         else if (playerScore > dealerScore) {
+            showBenderLose();
             return playerWins;
         }
         else if (dealerScore > playerScore) {
-            return dealerWins + "; larger score";
+            showBenderWin();
+            return dealerWins + " larger score";
         }
     }
     else {
@@ -151,8 +175,9 @@ function determineWinner(stayed) {
         if (playerBJ && dealerBJ) {
             return draw;
         }
-        else if (dealerBJ == true) {
-            return dealerWins + "; black jack";
+        else if (dealerBJ) {
+            showBenderWin();
+            return dealerWins + " Black jack!";
         }
     }
 
@@ -173,10 +198,47 @@ function hideGameButton() {
 }
 
 // create constant variable
-const dealerWins = "Dealer Win!";
+const dealerWins = "Dealer Win! Sorry! You lose.";
 const playerWins = "You Win!";
 const draw = "Draw";
 
 // create table to pick unicode cards
+function cardSymbol(card) {
+    let suit = "";
+    if (card.card == "♠") {
+        suit = "a";
+    }
+    else if (card.card == "♥") {
+        suit = "b";
+    }
+    else if (card.card == "♦") {
+        suit = "c";
+    }
+    else if (card.card == "♣") {
+        suit = "d";
+    }
+    let value = card.value;
+    if (card.value == "10") {
+        value = "a";
+    }
+    else if (card.value == "J") {
+        value = 'b';
+    }
+    else if (card.value == "Q") {
+        value = 'd';
+    }
+    else if (card.value == "K") {
+        value = 'e';
+    }
+    else if (card.value == "A") {
+        value = '1';
+    }
+    let symbol = "&#x1f0" + suit + value + ";";
+    if (suit == "b" || suit == "c") {
+        return '<span style="color:red">' + symbol + '</span>';
+    }
+    return symbol;
+
+}
 
 
